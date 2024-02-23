@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>花札点数計算ツール</title>
+<style>
+  body { font-family: Arial, sans-serif; }
+  table { border-collapse: collapse; width: 200px; margin: 0 auto; }
+  .score { width: 40px; text-align: center; }
+  .roles { width: 100px; text-align: center; }
+  td, th { border: 1px solid #dddddd; text-align: center; padding: 8px; }
+  tr:nth-child(even){background-color: #f2f2f2;}
+  tr.active{ background-color: #f3bfb7; }
+  #totalScoreDisplay { margin-top: 20px; text-align: center; font-size: 20px; }
+  button[onclick="koikoiReturn()"] {
+  width: 100px; /* ボタンの幅 */
+  height: 35px; /* ボタンの高さ */
+  margin-top: 10px; /* テーブルからの距離 */
+  display: block; /* ブロック要素として表示 */
+  margin-left: auto; /* 左マージンを自動で調整 */
+  margin-right: auto; /* 右マージンを自動で調整 */
+}
+</style>
+</head>
+<body>
+
+<h2 style="text-align: center;">花札点数計算</h2>
+
+<table>
+  <tr><th>役</th><th>点数</th></tr>
+  <tr data-score="10"><td class="roles">五光</td><td class="score"></td></tr>
+  <tr data-score="8"><td>四光</td><td></td></tr>
+  <tr data-score="7"><td>雨入り四光</td><td></td></tr>
+  <tr data-score="5"><td>三光</td><td></td></tr>
+  <tr data-score="5"><td>花見で一杯</td><td></td></tr>
+  <tr data-score="5"><td>月見で一杯</td><td></td></tr>
+  <tr data-score="5"><td>猪鹿蝶</td><td></td></tr>
+  <tr data-score="5"><td>赤短</td><td></td></tr>
+  <tr data-score="5"><td>青短</td><td></td></tr>
+  <tr data-score="1"><td>タネ</td><td></td></tr>
+  <tr data-score="1"><td>タン</td><td></td></tr>
+  <tr data-score="1"><td>カス</td><td></td></tr><button class="minus">-</button><button class="plus">+</button><button class="saka">盃</button>
+</table>
+
+<button onclick="koikoiReturn()">こいこい返し</button>
+
+<div id="totalScoreDisplay">合計点数：0</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  let totalScore = 0;
+  let scoredRoles = new Set();
+  let koikoiReturnActive = false; // 「こいこい返し」の状態を追跡する変数を追加
+
+  document.querySelectorAll('table tr').forEach((row, index) => {
+    if (index > 0) {
+      row.addEventListener('click', function() {
+        let score = parseInt(this.getAttribute('data-score'));
+        if (!this.classList.contains('active')) {
+          if (!scoredRoles.has(this)) {
+            totalScore += score;
+            scoredRoles.add(this);
+          }
+          this.classList.add('active');
+          this.cells[1].textContent = score;
+        } else {
+          this.classList.remove('active');
+          this.cells[1].textContent = '';
+          totalScore -= score;
+          scoredRoles.delete(this);
+        }
+        updateTotalScore();
+      });
+    }
+  });
+
+  document.querySelector('.plus').addEventListener('click', function() {
+    totalScore += 1;
+    updateTotalScore();
+  });
+
+  document.querySelector('.minus').addEventListener('click', function() {
+    if (totalScore > 0) {
+      totalScore -= 1;
+      updateTotalScore();
+    }
+  });
+
+  document.querySelector('.saka').addEventListener('click', function() {
+    totalScore += 1;
+    updateTotalScore();
+  });
+
+  document.querySelector('[onclick="koikoiReturn()"]').addEventListener('click', function() {
+    koikoiReturnActive = !koikoiReturnActive;
+    updateTotalScore();
+  });
+
+  function updateTotalScore() {
+    let displayScore = totalScore;
+    if (totalScore >= 7) {
+      displayScore = koikoiReturnActive ? totalScore * 4 : totalScore * 2; // 4倍または2倍の計算を適用
+    }
+    document.getElementById('totalScoreDisplay').textContent = `合計点数：${displayScore}${koikoiReturnActive && totalScore >= 7 ? ' (4倍)' : totalScore >= 7 ? ' (2倍)' : ''}`;
+  }
+
+});
+
+</script>
+
+
+</body>
+</html>
