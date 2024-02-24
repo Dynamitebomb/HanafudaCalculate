@@ -98,11 +98,20 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function updateTotalScore() {
     let displayScore = totalScore;
+    let multiplierText = ''; // 倍率のテキストを初期化
+
     if (totalScore >= 7) {
-      displayScore = koikoiReturnActive ? totalScore * 4 : totalScore * 2; // 4倍または2倍の計算を適用
+        displayScore = koikoiReturnActive ? totalScore * 4 : totalScore * 2; // こいこい返しアクティブ時は4倍、それ以外は2倍
+        multiplierText = koikoiReturnActive ? ' (4倍)' : ' (2倍)';
+    } else if (koikoiReturnActive) {
+        displayScore = totalScore * 2; // こいこい返しアクティブで7未満の場合は2倍
+        multiplierText = ' (2倍)'; // ここで「(2倍)」テキストを設定
     }
-    document.getElementById('totalScoreDisplay').textContent = `合計点数：${displayScore}${koikoiReturnActive && totalScore >= 7 ? ' (4倍)' : totalScore >= 7 ? ' (2倍)' : ''}`;
-  }
+
+    // 合計点数と倍率のテキストを表示
+    document.getElementById('totalScoreDisplay').textContent = `合計点数：${displayScore}${multiplierText}`;
+}
+
 
 });
 
